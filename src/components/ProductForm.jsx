@@ -4,6 +4,7 @@ function ProductForm({ onAddProduct }) {
   const [form, setForm] = useState({
     name: "",
     size: "",
+    categoria: "",
     color: "",
     stock: "",
     image: "",
@@ -16,7 +17,7 @@ function ProductForm({ onAddProduct }) {
   const submit = (e) => {
     e.preventDefault();
     onAddProduct(form);
-    setForm({ name: "", size: "", color: "", stock: "", image: "" });
+    setForm({ name: "", size: "", categoria: "", color: "", stock: "", image: "" });
   };
 
   return (
@@ -30,6 +31,15 @@ function ProductForm({ onAddProduct }) {
             <label className="form-label">Nombre</label>
             <input className="form-control" name="name"
               value={form.name} onChange={handleChange} />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Categoria</label>
+            <select className="form-select" name="categoria"
+              value={form.categoria} onChange={handleChange}>
+              <option value="">Seleccionar...</option>
+              <option>Camisetas</option><option>Jeans</option><option>Leggins</option><option>Polares</option><option>Blusas</option>
+            </select>
           </div>
 
           <div className="mb-3">
@@ -60,7 +70,7 @@ function ProductForm({ onAddProduct }) {
               value={form.image} onChange={handleChange} />
           </div>
 
-          <button className="btn btn-primary w-100">Guardar Producto</button>
+          <button className="btn btn-outline-danger w-100">Guardar Producto</button>
         </form>
       </div>
     </div>
@@ -68,3 +78,4 @@ function ProductForm({ onAddProduct }) {
 }
 
 export default ProductForm;
+
