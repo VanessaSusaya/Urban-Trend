@@ -9,6 +9,7 @@ function ProductList({ products }) {
             <thead className="table-dark">
               <tr>
                 <th>Nombre</th>
+                <th>Categoria</th>
                 <th>Talla</th>
                 <th>Color</th>
                 <th>Stock</th>
@@ -26,6 +27,7 @@ function ProductList({ products }) {
                 products.map((p, index) => (
                   <tr key={index}>
                     <td>{p.name}</td>
+                    <td>{p.categoria}</td>
                     <td>{p.size}</td>
                     <td>{p.color}</td>
                     <td>{p.stock}</td>
@@ -41,3 +43,4 @@ function ProductList({ products }) {
 }
 
 export default ProductList;
+
