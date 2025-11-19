@@ -11,6 +11,7 @@ function ProductCard({ product }) {
       <div className="card-body">
         <h5 className="fw-bold">{product.name}</h5>
         <p className="text-muted mb-2">
+          Categoria: <strong>{product.categoria}</strong><br />
           Talla: <strong>{product.size}</strong><br />
           Color: <strong>{product.color}</strong>
         </p>
@@ -27,3 +28,4 @@ function ProductCard({ product }) {
 }
 
 export default ProductCard;
+
