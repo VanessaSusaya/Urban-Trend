@@ -73,13 +73,22 @@ function CatalogoPage({ userRole, onGoToAdmin, onLogout }) {
         style={{
           backgroundColor: "#222",
           color: "#fff",
-          padding: "15px 20px",
+          padding: "12px 20px",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
         }}
       >
-        <h1 style={{ margin: 0 }}>UrbanTrend - Catálogo</h1>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div>
+            <div style={{ fontSize: "0.7em", letterSpacing: "2px", color: "#ff6b6b", fontWeight: "bold" }}>
+              URBAN
+            </div>
+            <div style={{ fontSize: "1em", fontWeight: "900", letterSpacing: "1px", margin: "0" }}>
+              TREND
+            </div>
+          </div>
+        </div>
         <div>
           <span style={{ marginRight: "20px" }}>Rol: {userRole}</span>
           {userRole === "admin" && (

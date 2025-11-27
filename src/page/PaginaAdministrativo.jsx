@@ -10,13 +10,20 @@ const mockSalesData = {
 };
 
 const initialProducts = [
-  { id: 1, name: "Polera Urban Classic", price: 89.9, sku: "PUC-001" },
-  { id: 2, name: "Zapatillas StreetWave", price: 159.0, sku: "ZSW-002" },
-  { id: 3, name: "Casaca WinterPro", price: 220.0, sku: "CWP-003" },
+  { id: 1, name: "Zapatillas Urban Street", price: 89.99, sku: "ZUS-001", categoria: "Calzados", size: "42", color: "Negro", stock: 20 },
+  { id: 2, name: "Mochila Urban Black", price: 59.99, sku: "MUB-002", categoria: "Accesorios", size: "Único", color: "Negro", stock: 15 },
+  { id: 3, name: "Gafas de Sol Trendy", price: 129.99, sku: "GST-003", categoria: "Accesorios", size: "Único", color: "Negro", stock: 12 },
+  { id: 4, name: "Cinturón Premium Cuero", price: 49.99, sku: "CPC-004", categoria: "Accesorios", size: "Único", color: "Marrón", stock: 18 },
+  { id: 5, name: "Polera Urban Classic", price: 34.99, sku: "PUC-005", categoria: "Camisetas", size: "M", color: "Negro", stock: 30 },
+  { id: 6, name: "Pantalón Denim Premium", price: 79.99, sku: "PDP-006", categoria: "Pantalones", size: "32", color: "Azul", stock: 22 },
+  { id: 7, name: "Chaqueta Urban Style", price: 119.99, sku: "CUS-007", categoria: "Chaquetas", size: "L", color: "Gris", stock: 10 },
+  { id: 8, name: "Gorro Beanie Negro", price: 24.99, sku: "GBN-008", categoria: "Accesorios", size: "Único", color: "Negro", stock: 25 },
+  { id: 9, name: "Sudadera Hoodie Gris", price: 64.99, sku: "SHG-009", categoria: "Sudaderas", size: "L", color: "Gris", stock: 14 },
+  { id: 10, name: "Reloj Urban Watch", price: 149.99, sku: "RUW-010", categoria: "Accesorios", size: "Único", color: "Plata", stock: 8 },
 ];
 
-export default function PaginaAdministrativo({ onLogout, userRole }) {
-  const [activeSection, setActiveSection] = useState("ventas"); // ventas | precios
+export default function PaginaAdministrativo({ onBackToCatalog, userRole }) {
+  const [activeSection, setActiveSection] = useState("ventas"); // ventas | precios | productos
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
   const [filter, setFilter] = useState({ startDate: "", endDate: "", category: "Todos" });
@@ -26,19 +33,29 @@ export default function PaginaAdministrativo({ onLogout, userRole }) {
   const [editingProduct, setEditingProduct] = useState(null);
   const [newPrice, setNewPrice] = useState("");
 
+  // Formulario de nuevo producto
+  const [newProductForm, setNewProductForm] = useState({
+    name: "",
+    price: "",
+    sku: "",
+    categoria: "",
+    size: "",
+    color: "",
+    stock: "",
+  });
+
   // Carga de datos
   useEffect(() => {
     setLoading(true);
     const t = setTimeout(() => {
       setProducts(initialProducts);
       setLoading(false);
-    }, 600); // simulación
+    }, 600);
     return () => clearTimeout(t);
   }, []);
 
   // Funciones
   const applyFilters = () => {
-    // Placeholder: aquí iría la lógica real para filtrar reportes
     setNotification("Filtros aplicados");
     setTimeout(() => setNotification(null), 2000);
   };
@@ -60,6 +77,37 @@ export default function PaginaAdministrativo({ onLogout, userRole }) {
     );
     setNotification(`Precio actualizado: ${editingProduct.name} → S/. ${Number(newPrice).toFixed(2)}`);
     closeEditModal();
+    setTimeout(() => setNotification(null), 2500);
+  };
+
+  const handleAddProduct = (e) => {
+    e.preventDefault();
+    if (!newProductForm.name || !newProductForm.price || !newProductForm.sku) {
+      setNotification("Por favor completa los campos requeridos");
+      return;
+    }
+    
+    const newProduct = {
+      id: products.length + 1,
+      name: newProductForm.name,
+      price: Number(newProductForm.price),
+      sku: newProductForm.sku,
+      categoria: newProductForm.categoria,
+      size: newProductForm.size,
+      color: newProductForm.color,
+      stock: Number(newProductForm.stock) || 0,
+    };
+    
+    setProducts([...products, newProduct]);
+    setNotification(`Producto "${newProductForm.name}" agregado exitosamente`);
+    setNewProductForm({ name: "", price: "", sku: "", categoria: "", size: "", color: "", stock: "" });
+    setTimeout(() => setNotification(null), 2500);
+  };
+
+  const handleDeleteProduct = (id) => {
+    const product = products.find(p => p.id === id);
+    setProducts(products.filter(p => p.id !== id));
+    setNotification(`Producto "${product.name}" eliminado`);
     setTimeout(() => setNotification(null), 2500);
   };
 
@@ -92,33 +140,6 @@ export default function PaginaAdministrativo({ onLogout, userRole }) {
     );
   };
 
-  // UI subcomponent: FiltrosReportes
-  const FiltrosReportes = () => (
-    <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 18, alignItems: "flex-end" }}>
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <label style={{ fontSize: 12, color: "#555" }}>Fecha Inicio</label>
-        <input type="date" value={filter.startDate} onChange={(e) => setFilter(f => ({...f, startDate: e.target.value}))} style={{ padding: 8, borderRadius: 8, border: "1px solid #ddd" }} />
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <label style={{ fontSize: 12, color: "#555" }}>Fecha Fin</label>
-        <input type="date" value={filter.endDate} onChange={(e) => setFilter(f => ({...f, endDate: e.target.value}))} style={{ padding: 8, borderRadius: 8, border: "1px solid #ddd" }} />
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <label style={{ fontSize: 12, color: "#555" }}>Categoría</label>
-        <select value={filter.category} onChange={(e) => setFilter(f => ({...f, category: e.target.value}))} style={{ padding: 8, borderRadius: 8, border: "1px solid #ddd" }}>
-          <option>Todos</option>
-          <option>Ropa</option>
-          <option>Calzados</option>
-          <option>Accesorios</option>
-        </select>
-      </div>
-
-      <button onClick={applyFilters} style={{ padding: "10px 14px", background: "#222", color: "#fff", borderRadius: 8, border: "none", cursor: "pointer" }}>Aplicar</button>
-    </div>
-  );
-
   // UI subcomponent: TablaPrecios
   const TablaPrecios = () => {
     if (loading) return <p>Cargando productos...</p>;
@@ -130,8 +151,9 @@ export default function PaginaAdministrativo({ onLogout, userRole }) {
           <tr>
             <th style={{ textAlign: "left", padding: 10, borderBottom: "1px solid #eee" }}>Producto</th>
             <th style={{ textAlign: "left", padding: 10, borderBottom: "1px solid #eee" }}>SKU</th>
-            <th style={{ textAlign: "left", padding: 10, borderBottom: "1px solid #eee" }}>Precio Actual</th>
-            <th style={{ padding: 10, borderBottom: "1px solid #eee" }}>Acción</th>
+            <th style={{ textAlign: "left", padding: 10, borderBottom: "1px solid #eee" }}>Precio</th>
+            <th style={{ textAlign: "left", padding: 10, borderBottom: "1px solid #eee" }}>Stock</th>
+            <th style={{ padding: 10, borderBottom: "1px solid #eee" }}>Acciones</th>
           </tr>
         </thead>
 
@@ -141,9 +163,13 @@ export default function PaginaAdministrativo({ onLogout, userRole }) {
               <td style={{ padding: 10 }}>{p.name}</td>
               <td style={{ padding: 10 }}>{p.sku}</td>
               <td style={{ padding: 10 }}>S/. {Number(p.price).toFixed(2)}</td>
+              <td style={{ padding: 10 }}>{p.stock}</td>
               <td style={{ padding: 10, textAlign: "center" }}>
-                <button onClick={() => openEditModal(p)} style={{ padding: "8px 12px", background: "#222", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
-                  Editar
+                <button onClick={() => openEditModal(p)} style={{ padding: "6px 10px", background: "#222", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", marginRight: 5, fontSize: "0.85em" }}>
+                  Editar Precio
+                </button>
+                <button onClick={() => handleDeleteProduct(p.id)} style={{ padding: "6px 10px", background: "#ff6b6b", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: "0.85em" }}>
+                  Eliminar
                 </button>
               </td>
             </tr>
@@ -157,7 +183,14 @@ export default function PaginaAdministrativo({ onLogout, userRole }) {
     <div style={{ display: "flex", minHeight: "100vh", fontFamily: "Arial, sans-serif", background: "#f4f5f7" }}>
       {/* Sidebar */}
       <aside style={{ width: 240, background: "#222", color: "#fff", padding: 20 }}>
-        <h3 style={{ textAlign: "center", marginBottom: 18 }}>Admin Panel</h3>
+        <div style={{ textAlign: "center", marginBottom: 24 }}>
+          <div style={{ fontSize: "0.7em", letterSpacing: "2px", color: "#ff6b6b", fontWeight: "bold" }}>
+            URBAN
+          </div>
+          <div style={{ fontSize: "1em", fontWeight: "900", letterSpacing: "1px" }}>
+            TREND
+          </div>
+        </div>
 
         <nav style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <button onClick={() => setActiveSection("ventas")} style={{ padding: 10, borderRadius: 8, background: activeSection === "ventas" ? "#444" : "transparent", color: "#fff", border: "none", textAlign: "left", cursor: "pointer" }}>
@@ -168,8 +201,12 @@ export default function PaginaAdministrativo({ onLogout, userRole }) {
             💰 Gestión de Precios
           </button>
 
-          <button onClick={onLogout} style={{ marginTop: 12, padding: 10, borderRadius: 8, background: "#666", color: "#fff", border: "none", textAlign: "left", cursor: "pointer", width: "100%" }}>
-            🔙 Salir
+          <button onClick={() => setActiveSection("productos")} style={{ padding: 10, borderRadius: 8, background: activeSection === "productos" ? "#444" : "transparent", color: "#fff", border: "none", textAlign: "left", cursor: "pointer" }}>
+            📦 Registrar Productos
+          </button>
+
+          <button onClick={onBackToCatalog} style={{ marginTop: 12, padding: 10, borderRadius: 8, background: "#666", color: "#fff", border: "none", textAlign: "left", cursor: "pointer", width: "100%" }}>
+            🔙 Volver al Catálogo
           </button>
         </nav>
 
@@ -189,10 +226,7 @@ export default function PaginaAdministrativo({ onLogout, userRole }) {
 
         {activeSection === "ventas" && (
           <>
-            <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h2>📊 Reportes de Ventas</h2>
-            </header>
-
+            <h2>📊 Reportes de Ventas</h2>
             <SummaryCards />
 
             <div style={{ marginTop: 20, display: "flex", gap: 16 }}>
@@ -205,33 +239,99 @@ export default function PaginaAdministrativo({ onLogout, userRole }) {
                   {mockSalesData.topProducts.map((t, i) => <li key={i}>{t}</li>)}
                 </ol>
               </div>
-
-              <div style={{ width: 360, background: "#fff", padding: 16, borderRadius: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}>
-                <h4>Filtros</h4>
-                <FiltrosReportes />
-              </div>
             </div>
           </>
         )}
 
         {activeSection === "precios" && (
           <>
-            <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h2>💰 Gestión de Precios</h2>
-            </header>
+            <h2>💰 Gestión de Precios</h2>
+            <div style={{ marginTop: 12, background: "#fff", padding: 16, borderRadius: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}>
+              <h4>Modificar precios de productos</h4>
+              <TablaPrecios />
+            </div>
+          </>
+        )}
 
-            <div style={{ marginTop: 12 }}>
+        {activeSection === "productos" && (
+          <>
+            <h2>📦 Registrar Nuevos Productos</h2>
+            <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              {/* Formulario */}
               <div style={{ background: "#fff", padding: 16, borderRadius: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}>
-                <h4>Modificar precios de productos</h4>
+                <h4>Formulario de Registro</h4>
+                <form onSubmit={handleAddProduct} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div>
+                    <label style={{ fontSize: "0.9em", color: "#555" }}>Nombre *</label>
+                    <input type="text" placeholder="Nombre del producto" value={newProductForm.name} onChange={(e) => setNewProductForm({...newProductForm, name: e.target.value})} style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #ddd", marginTop: 4 }} />
+                  </div>
 
-                <TablaPrecios />
+                  <div>
+                    <label style={{ fontSize: "0.9em", color: "#555" }}>Precio *</label>
+                    <input type="number" placeholder="0.00" value={newProductForm.price} onChange={(e) => setNewProductForm({...newProductForm, price: e.target.value})} style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #ddd", marginTop: 4 }} />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: "0.9em", color: "#555" }}>SKU *</label>
+                    <input type="text" placeholder="Ej: PROD-001" value={newProductForm.sku} onChange={(e) => setNewProductForm({...newProductForm, sku: e.target.value})} style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #ddd", marginTop: 4 }} />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: "0.9em", color: "#555" }}>Categoría</label>
+                    <select value={newProductForm.categoria} onChange={(e) => setNewProductForm({...newProductForm, categoria: e.target.value})} style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #ddd", marginTop: 4 }}>
+                      <option value="">Seleccionar...</option>
+                      <option value="Camisetas">Camisetas</option>
+                      <option value="Pantalones">Pantalones</option>
+                      <option value="Chaquetas">Chaquetas</option>
+                      <option value="Calzados">Calzados</option>
+                      <option value="Accesorios">Accesorios</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: "0.9em", color: "#555" }}>Talla</label>
+                    <input type="text" placeholder="S, M, L, XL..." value={newProductForm.size} onChange={(e) => setNewProductForm({...newProductForm, size: e.target.value})} style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #ddd", marginTop: 4 }} />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: "0.9em", color: "#555" }}>Color</label>
+                    <input type="text" placeholder="Ej: Negro, Rojo..." value={newProductForm.color} onChange={(e) => setNewProductForm({...newProductForm, color: e.target.value})} style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #ddd", marginTop: 4 }} />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: "0.9em", color: "#555" }}>Stock</label>
+                    <input type="number" placeholder="0" value={newProductForm.stock} onChange={(e) => setNewProductForm({...newProductForm, stock: e.target.value})} style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #ddd", marginTop: 4 }} />
+                  </div>
+
+                  <button type="submit" style={{ padding: 12, background: "#222", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: "bold", marginTop: 8 }}>
+                    ✅ Guardar Producto
+                  </button>
+                </form>
+              </div>
+
+              {/* Listado */}
+              <div style={{ background: "#fff", padding: 16, borderRadius: 10, boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}>
+                <h4>Inventario ({products.length})</h4>
+                {products.length === 0 ? (
+                  <p style={{ color: "#999" }}>Sin productos aún...</p>
+                ) : (
+                  <div style={{ maxHeight: 400, overflowY: "auto" }}>
+                    {products.map((p) => (
+                      <div key={p.id} style={{ padding: 12, borderBottom: "1px solid #eee", fontSize: "0.9em" }}>
+                        <div style={{ fontWeight: "bold" }}>{p.name}</div>
+                        <div style={{ color: "#666", fontSize: "0.85em" }}>SKU: {p.sku} | Stock: {p.stock}</div>
+                        <div style={{ color: "#ff6b6b", fontWeight: "bold" }}>S/. {p.price.toFixed(2)}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </>
         )}
       </main>
 
-      {/* Modal: Edit Price (simple) */}
+      {/* Modal: Edit Price */}
       {editingProduct && (
         <div style={{
           position: "fixed", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",

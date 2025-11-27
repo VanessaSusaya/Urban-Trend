@@ -39,13 +39,20 @@ const LoginPage = ({ onLoginSuccess }) => {
         style={{
           backgroundColor: "#222",
           color: "#fff",
-          padding: "15px 20px",
-          fontSize: "1.5em",
-          fontWeight: "bold",
-          textAlign: "center",
+          padding: "12px 20px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
-        UrbanTrend
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: "0.8em", letterSpacing: "2px", color: "#ff6b6b", fontWeight: "bold" }}>
+            URBAN
+          </div>
+          <div style={{ fontSize: "1.2em", fontWeight: "900", letterSpacing: "1px" }}>
+            TREND
+          </div>
+        </div>
       </header>
 
       {/*Contenedor del login*/}
