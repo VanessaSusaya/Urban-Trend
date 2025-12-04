@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { initialProducts } from "./data/products";
 
 // Páginas
 import LoginPage from "./page/LoginPage";
@@ -6,39 +7,40 @@ import CatalogoPage from "./page/CatalogoPage";
 import PaginaAdministrativo from "./page/PaginaAdministrativo";
 
 function App() {
-  // Estado global de navegación
-  const [screen, setScreen] = useState("login"); // login → catalogo → admin
-  const [userRole, setUserRole] = useState(null); // admin / user
+  const [screen, setScreen] = useState("login");
+  const [userRole, setUserRole] = useState(null);
 
-  // Cuando el usuario se logea correctamente
+  // Productos globales compartidos entre catálogo y admin
+  const [products, setProducts] = useState(initialProducts);
+
+  const agregarProducto = (nuevo) => {
+    setProducts([...products, { ...nuevo, id: Date.now() }]);
+  };
+
+  const editarProducto = (editado) => {
+    setProducts(products.map(p => p.id === editado.id ? editado : p));
+  };
+
+  const eliminarProducto = (id) => {
+    setProducts(products.filter(p => p.id !== id));
+  };
+
   const handleLoginSuccess = (role) => {
     setUserRole(role);
-
-    // Después de login → ir al catálogo
     setScreen("catalogo");
   };
 
-  //Cuando en el catálogo se presiona "ir al panel admin"
   const handleGoToAdmin = () => {
-    if (userRole === "admin") {
-      setScreen("admin");
-    } else {
-      alert("No tienes permisos para acceder al panel administrativo.");
-    }
+    if (userRole === "admin") setScreen("admin");
+    else alert("No tienes permisos.");
   };
 
-  // Volver al catálogo desde admin
-  const handleBackToCatalog = () => {
-    setScreen("catalogo");
-  };
-
-  // Permite salir en cualquier página
+  const handleBackToCatalog = () => setScreen("catalogo");
   const handleLogout = () => {
     setUserRole(null);
     setScreen("login");
   };
 
-  // Control de pantallas
   return (
     <>
       {screen === "login" && (
@@ -46,17 +48,22 @@ function App() {
       )}
 
       {screen === "catalogo" && (
-        <CatalogoPage 
+        <CatalogoPage
           userRole={userRole}
           onGoToAdmin={handleGoToAdmin}
           onLogout={handleLogout}
+          products={products}     // Catálogo recibe productos reales
         />
       )}
 
       {screen === "admin" && (
-        <PaginaAdministrativo 
+        <PaginaAdministrativo
           onBackToCatalog={handleBackToCatalog}
           userRole={userRole}
+          products={products}     // Admin usa productos reales
+          onAgregar={agregarProducto}
+          onEditar={editarProducto}
+          onEliminar={eliminarProducto}
         />
       )}
     </>
@@ -64,4 +71,3 @@ function App() {
 }
 
 export default App;
-
