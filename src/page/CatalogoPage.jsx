@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ProductCard from "../components/ProductCard";
 
-function CatalogoPage({ userRole, onGoToAdmin, onLogout, products }) {
+function CatalogoPage({ userRole, onGoToPanel, onLogout, products }) {
 
   // Filtros
   const [categoriaFiltro, setCategoriaFiltro] = useState("");
@@ -36,22 +36,23 @@ function CatalogoPage({ userRole, onGoToAdmin, onLogout, products }) {
         <div>
           <span style={{ marginRight: "20px" }}>Rol: {userRole}</span>
 
-          {userRole === "admin" && (
-            <button
-              onClick={onGoToAdmin}
-              style={{
-                padding: "8px 15px",
-                marginRight: "10px",
-                backgroundColor: "#ff6b6b",
-                color: "#fff",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-            >
-              Panel Admin
-            </button>
-          )}
+          <button
+            onClick={onGoToPanel}
+            style={{
+              padding: "8px 15px",
+              marginRight: "10px",
+              backgroundColor: "#ff6b6b",
+              color: "#fff",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            {userRole === "admin" ? "Panel Admin" : 
+             userRole === "cajero" ? "Panel Cajero" : 
+             userRole === "almacenero" ? "Panel Almacenero" : 
+             userRole === "supervisor" ? "Panel Supervisor" : "Mi Panel"}
+          </button>
 
           <button
             onClick={onLogout}
